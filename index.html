@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html></html>
+  <head>
+    <title>Generate Password</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <link rel="stylesheet" type="text/css" href="/app.css">
+     -->
+     <style>body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      
+      header {
+        background-color: #333;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+      }
+      
+      h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+      
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .remove {
+        background-color: #F45050;
+      }
+      .remove:hover {
+        background-color: #F15A59;
+      }
+      
+      button:hover {
+        background-color: #0062cc;
+      }
+      
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
+      
+      th,
+      td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+      }
+      
+      th {
+        background-color: #f2f2f2;
+      }
+      </style>
+
+  </head>
+  <body>
+    <header>
+      <h1>Generate Password</h1>
+      <button onclick="generatePassword()">Generate Password</button>
+      <a href="/logout"><button>Logout</button></a>
+
+
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+    
+          <th>Pass</th>
+          <th>Created Time</th>
+          <th>Copy</th>
+          <th>Remove</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="passwords"></tbody>
+    </table>
+    <button onclick="clearPassword()">Clear Pasword</button>
+    <script>
+      function clearPassword() {
+        const itemPassword = document.getElementById("passwords");
+       while(itemPassword.firstChild) {
+        itemPassword.removeChild(itemPassword.firstChild)
+       }
+      }
+ 
+    </script>
+    <script>
+      let index = 1;
+
+      function generatePassword() {
+        fetch("/generate-password")
+          .then((response) => response.text())
+          .then((password) => {
+            const tbody = document.getElementById("passwords");
+            const tr = document.createElement("tr");
+            const no = document.createElement("td");
+            no.textContent = index++;
+            const tdPassword = document.createElement("td");
+            // thời gian tạo pass
+            const tdTimestamp = document.createElement("td");
+            tdTimestamp.textContent = new Date().toLocaleString();
+            //note
+            // const inputNote = document.createElement("td")
+
+            // copy
+            const tdAction1 = document.createElement("td");
+            const tdAction2 = document.createElement("td");
+
+            const buttonCopy = document.createElement("button");
+            const note = document.createElement("td");
+            const input = document.createElement("input");
+            const buttonRemove = document.createElement("button");
+            buttonRemove.className = "remove";
+            buttonRemove.textContent = "Remove";
+            buttonRemove.onclick = () => {
+              const confirmRemove = confirm("Xác nhận xóa")
+              console.log(confirmRemove);
+              if(confirmRemove) {
+                const tr = buttonRemove.parentNode.parentNode;
+                tr.remove()
+              }
+            }
+            tdPassword.textContent = password;
+            buttonCopy.textContent = "Copy";
+            buttonCopy.onclick = () => {
+                alert("bạn đã copy")
+              const textarea = document.createElement("textarea");
+              textarea.value = password;
+              document.body.appendChild(textarea);
+              textarea.select();
+              document.execCommand("copy");
+              document.body.removeChild(textarea);
+            };
+            tdAction1.appendChild(buttonCopy);
+            tdAction2.appendChild(buttonRemove);
+            note.appendChild(input);
+            tr.appendChild(no)
+            tr.appendChild(tdPassword);
+            tr.appendChild(tdTimestamp);
+            tr.appendChild(tdAction1);
+            tr.appendChild(tdAction2);
+            tr.appendChild(note)
+            tbody.appendChild(tr);
+          });
+        
+      }
+    </script>
+    
+  </body>
+</html>
